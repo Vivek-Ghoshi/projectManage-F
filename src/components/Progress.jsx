@@ -3,13 +3,13 @@ import { motion } from 'framer-motion';
 import { useState, useEffect } from 'react';
 
 const Progress = () => {
- 
+  const api = process.env.REACT_APP_API_URL
   const [stats, setStats] = useState({});
   useEffect( ()=>{
     const { id } =  JSON.parse(localStorage.getItem('userId'));
       const fetchStats =  async(id)=>{
          try {
-             const {data} = await axios.get(`http://localhost:3000/api/auth/${id}/progress`)
+             const {data} = await axios.get(`${api}/api/auth/${id}/progress`)
              setStats(data)
          } catch (error) {
            console.log(error.message)

@@ -4,6 +4,7 @@ import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 
 const Login = () => {
+  const api = process.env.REACT_APP_API_URL
   const navigate = useNavigate();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -13,7 +14,7 @@ const Login = () => {
     e.preventDefault();
     try {
       const newUser = {email,password}
-      const {data} = await axios.post('http://localhost:3000/api/auth/login',newUser);
+      const {data} = await axios.post(`${api}/api/auth/login`,newUser);
       setUser(data)
       localStorage.setItem("userId",JSON.stringify({id : data._id}))
       navigate('/dashboard')

@@ -4,6 +4,7 @@ import { motion } from 'framer-motion';
 import axios from 'axios';
 
 const Nav = () => {
+  const api = process.env.REACT_APP_API_URL
   const location = useLocation();
   const navigate = useNavigate();
   const [isOpen, setIsOpen] = useState(false);
@@ -15,7 +16,7 @@ const Nav = () => {
   ];
   const logoutHandler = async () =>{
    try{
-         const {data} = axios.get('http://localhost:3000/api/auth/logout');
+         const {data} = axios.get(`${api}/api/auth/logout`);
         setIsOpen(true)
          localStorage.clear();
          console.log('user logged out')

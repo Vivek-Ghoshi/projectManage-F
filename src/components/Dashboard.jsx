@@ -5,6 +5,7 @@ import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 
 const Dashboard = () => {
+  const api = process.env.REACT_APP_API_URL
   const navigate = useNavigate();
   const [projects, setProjects] = useState([]);
   
@@ -13,7 +14,7 @@ const Dashboard = () => {
   const allProjects = async (e)=>{
       try {
           
-        const response = await axios.get('http://localhost:3000/api/projects/all');
+        const response = await axios.get(`${api}/api/projects/all`);
        
         setProjects(response.data)
 
@@ -26,7 +27,7 @@ const Dashboard = () => {
   const DetailsHandler = async (id)=>{
     
     try {
-        const { data } = await axios.get(`http://localhost:3000/api/projects/${id}`)
+        const { data } = await axios.get(`${api}/api/projects/${id}`)
         
         navigate(`/projects/${id}`,{
           state:{ project : data}
@@ -37,7 +38,7 @@ const Dashboard = () => {
   }
   const handleAcceptProject = (id) => {
     try {
-         const response = axios.get(`http://localhost:3000/api/projects/accept/${id}`);
+         const response = axios.get(`${api}/api/projects/accept/${id}`);
 
     } catch (error) {
       console.log(error.message)
@@ -90,6 +91,7 @@ const Dashboard = () => {
   };
 
   return (
+    
     <div className="min-h-screen bg-gradient-to-br from-purple-50 via-white to-indigo-50 p-6">
       <motion.div
         initial={{ opacity: 0, y: -20 }}

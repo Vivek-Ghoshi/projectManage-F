@@ -11,6 +11,7 @@ const ProjectDetails = () => {
   const [subtasks, setSubtasks] = useState([]);
   const [progress, setProgress] = useState(0);
 
+  const api = process.env.REACT_APP_API_URL
   const projectDetails =  ()=>{
        const {id} = useParams();
 
@@ -19,7 +20,7 @@ const ProjectDetails = () => {
       const fetchdata = async ()=>{
 
         try{
-           const {data} = await axios.get(`http://localhost:3000/api/projects/${id}`)
+           const {data} = await axios.get(`${api}/api/projects/${id}`)
            setDetails(data) 
            setSubtasks(data.tasks)
          }
