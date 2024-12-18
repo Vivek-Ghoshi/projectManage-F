@@ -3,7 +3,7 @@ import { motion } from 'framer-motion';
 import { useState, useEffect } from 'react';
 
 const Progress = () => {
-  const api = meta.env.VITE_API_URL
+  const api = import.meta.env.VITE_API_URL
   const [stats, setStats] = useState({});
   useEffect( ()=>{
     const { id } =  JSON.parse(localStorage.getItem('userId'));

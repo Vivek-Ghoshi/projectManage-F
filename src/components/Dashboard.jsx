@@ -5,7 +5,7 @@ import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 
 const Dashboard = () => {
-  const api = meta.env.VITE_API_URL
+  const api = import.meta.env.VITE_API_URL
   const navigate = useNavigate();
   const [projects, setProjects] = useState([]);
   

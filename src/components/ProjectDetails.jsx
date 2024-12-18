@@ -11,7 +11,7 @@ const ProjectDetails = () => {
   const [subtasks, setSubtasks] = useState([]);
   const [progress, setProgress] = useState(0);
 
-  const api = meta.env.VITE_API_URL
+  const api = import.meta.env.VITE_API_URL
   const projectDetails =  ()=>{
        const {id} = useParams();
 

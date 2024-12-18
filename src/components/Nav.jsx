@@ -4,7 +4,7 @@ import { motion } from 'framer-motion';
 import axios from 'axios';
 
 const Nav = () => {
-  const api = meta.env.VITE_API_URL
+  const api = import.meta.env.VITE_API_URL
   const location = useLocation();
   const navigate = useNavigate();
   const [isOpen, setIsOpen] = useState(false);
