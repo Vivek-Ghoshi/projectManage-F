@@ -47,7 +47,7 @@ const ProjectDetails = () => {
 
   const toggleSubtask = async (taskId) => {
     try {
-       const {data} = await axios.get(`http://localhost:3000/api/tasks/${taskId}/complete`);
+       const {data} = await axios.get(`${api}/api/tasks/${taskId}/complete`);
          setSubtasks(data.tasks)
        
     } catch (error) {
