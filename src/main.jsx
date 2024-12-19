@@ -2,9 +2,13 @@ import { createRoot } from 'react-dom/client'
 import './index.css'
 import App from './App.jsx'
 import { BrowserRouter } from 'react-router-dom'
+import ProgressProvider from './context/ProgressProvider.jsx'
 
 createRoot(document.getElementById('root')).render(
+ 
   <BrowserRouter>
-    <App />
-    </BrowserRouter>
+      <ProgressProvider>
+         <App />
+      </ProgressProvider>
+ </BrowserRouter>
 )

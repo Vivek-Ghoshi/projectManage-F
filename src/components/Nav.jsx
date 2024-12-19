@@ -1,17 +1,34 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import axios from 'axios';
 
 const Nav = () => {
-  const api = import.meta.env.VITE_API_URL
+  const api = import.meta.env.VITE_API_URL;
   const location = useLocation();
   const navigate = useNavigate();
   const [isOpen, setIsOpen] = useState(false);
+  const [ids,setIds] = useState('');
+  
+  useEffect(()=>{
+    const allProjects = async () => {
+      try {
+        const {data} = await axios.get(`${api}/api/projects/all`);
+        setIds(data)
+      } catch (error) {
+        console.log(error.message);
+      }
+    };
+    allProjects();
+  },[]);
 
   const navItems = [
     { path: '/dashboard', label: 'Dashboard', icon: '📊' },
-    { path: `/projects`, label: 'Projects', icon: '📁' },
+    // {
+    //    path: `/projects`,
+    //    label: `Project`,
+    //    icon: '📁',
+    //  },
     { path: '/progress', label: 'Progress', icon: '📈' },
   ];
   const logoutHandler = async () =>{
@@ -25,7 +42,7 @@ const Nav = () => {
    catch(error){
     console.log(error.message)
    }
-  }
+  };
 
   return (
     <nav className="bg-gradient-to-r from-purple-600 to-indigo-600 text-white shadow-lg">

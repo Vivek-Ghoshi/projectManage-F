@@ -1,76 +1,95 @@
-import { useState, useEffect, useMemo } from 'react';
-import { motion } from 'framer-motion';
-import { FiCalendar, FiClock, FiCheckCircle, FiXCircle, FiAlertCircle, FiChevronRight } from 'react-icons/fi';
-import { useLocation, useParams } from 'react-router-dom';
-import axios from 'axios';
+import { useState, useEffect } from "react";
+import { motion } from "framer-motion";
+import {
+  FiCalendar,
+  FiClock,
+  FiCheckCircle,
+  FiXCircle,
+  FiAlertCircle,
+  FiChevronRight,
+} from "react-icons/fi";
+import { useLocation, useParams } from "react-router-dom";
+
+import axios from "axios";
+import { useProgress } from "../context/ProgressProvider";
 
 const ProjectDetails = () => {
-  const [status, setStatus] = useState('in-progress');
+  const api = import.meta.env.VITE_API_URL;
+  
+  const [status, setStatus] = useState("in-progress");
   const location = useLocation();
-  const [details, setDetails] = useState('');
+  const [details, setDetails] = useState("");
   const [subtasks, setSubtasks] = useState([]);
-  const [progress, setProgress] = useState(0);
+  const { progress, setProgress } = useProgress();
+  const { id } = useParams();
 
-  const api = import.meta.env.VITE_API_URL
-  const projectDetails =  ()=>{
-       const {id} = useParams();
+  useEffect(()=>{
+    const updateProgress = async() =>{
+        try {
+          const {data} = await axios.get(`${api}/api/projects/${id}/progress`);
+        } catch (error) {
+          console.log('from updateProgress frontend',error.message)
+        }
+    }
+    updateProgress();
+  },[]);
 
-    useEffect( ()=>{
-
-      const fetchdata = async ()=>{
-
-        try{
-           const {data} = await axios.get(`${api}/api/projects/${id}`)
-           setDetails(data) 
-           setSubtasks(data.tasks)
-         }
-         catch(err){
-           console.log(err.message)
-         }
-      }
+  const projectDetails = () => {
+    
+    
+    useEffect(() => {
+      const fetchdata = async () => {
+        try {
+          const { data } = await axios.get(`${api}/api/projects/${id}`);
+          setDetails(data);
+          setSubtasks(data.tasks);
+        } catch (err) {
+          console.log(err.message);
+        }
+      };
       fetchdata();
-       },[id])
-      }
-      projectDetails();
+    }, [id]);
+  };
+  projectDetails();
 
   useEffect(() => {
     // Calculate progress based on completed subtasks
-    const completedTasks = subtasks.filter(task => task.status === 'Completed').length;
+    const completedTasks = subtasks.filter(
+      (task) => task.status === "Completed"
+    ).length;
     const newProgress = Math.round((completedTasks / subtasks.length) * 100);
     setProgress(newProgress);
 
     // Automatically update status if all tasks are completed
     if (newProgress === 100) {
-      setStatus('completed');
+      setStatus("Completed");
     }
   }, [subtasks]);
 
   const toggleSubtask = async (taskId) => {
     try {
-       const {data} = await axios.get(`${api}/api/tasks/${taskId}/complete`);
-         setSubtasks(data.tasks)
-       
+      const { data } = await axios.get(
+        `http://localhost:3000/api/tasks/${taskId}/complete`
+      );
+      setSubtasks(data.tasks);
     } catch (error) {
-      console.log(error.message)
+      console.log(error.message);
     }
   };
 
   useEffect(() => {
     if (subtasks.length > 0) {
-        const statuses = subtasks.map(task => task.status); // Extract statuses
-        setStatus(statuses); // Store them in the state
-      
+      const statuses = subtasks.map((task) => task.status);
+      setStatus(statuses);
     }
-}, [subtasks]); 
-
-
+  }, [subtasks]);
 
   const handleComplete = () => {
-    setStatus('completed');
+    setStatus("completed");
   };
 
   const handleFail = () => {
-    setStatus('failed');
+    setStatus("failed");
   };
 
   return (
@@ -86,7 +105,7 @@ const ProjectDetails = () => {
             <h1 className="text-3xl font-bold bg-gradient-to-r from-purple-600 to-indigo-600 bg-clip-text text-transparent">
               Project Details
             </h1>
-            {status === 'in-progress' && (
+            {status === "in-progress" && (
               <motion.button
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
@@ -100,7 +119,7 @@ const ProjectDetails = () => {
               </motion.button>
             )}
           </div>
-          
+
           {/* Progress Bar */}
           <div className="space-y-2">
             <div className="flex justify-between items-center text-sm font-medium">
@@ -113,11 +132,11 @@ const ProjectDetails = () => {
                 animate={{ width: `${progress}%` }}
                 transition={{ duration: 0.5 }}
                 className={`h-full rounded-full ${
-                  status === 'completed' 
-                    ? 'bg-gradient-to-r from-green-400 to-green-500'
-                    : status === 'failed'
-                    ? 'bg-gradient-to-r from-red-400 to-red-500'
-                    : 'bg-gradient-to-r from-purple-400 to-indigo-500'
+                  status === "completed"
+                    ? "bg-gradient-to-r from-green-400 to-green-500"
+                    : status === "failed"
+                    ? "bg-gradient-to-r from-red-400 to-red-500"
+                    : "bg-gradient-to-r from-purple-400 to-indigo-500"
                 }`}
               />
             </div>
@@ -135,12 +154,16 @@ const ProjectDetails = () => {
             {/* Project Title and Timeline */}
             <div className="space-y-4">
               <h2 className="text-2xl font-bold text-gray-800">
-               {details.title}
+                {details.title}
               </h2>
               <div className="flex flex-col space-y-2">
                 <span className="flex items-center text-gray-600">
                   <FiCalendar className="mr-2" />
-                  {details.deadline}
+                  {new Date(details.deadline).toLocaleDateString('en-US',{
+                    day: 'numeric',
+                    month:'short',
+                    year:'2-digit'
+                  })}
                 </span>
                 <span className="flex items-center text-gray-600">
                   <FiClock className="mr-2" />
@@ -155,12 +178,12 @@ const ProjectDetails = () => {
                 Project Description
               </h3>
               <p className="text-gray-600 leading-relaxed">
-              { details.description}
+                {details.description}
               </p>
             </div>
 
             {/* Status Warning */}
-            {status === 'in-progress' && progress < 100 && (
+            {status === "in-progress" && progress < 100 && (
               <div className="flex items-center p-4 bg-amber-50 text-amber-800 rounded-lg border border-amber-200">
                 <FiAlertCircle className="text-xl mr-2" />
                 <p className="text-sm">
@@ -176,34 +199,48 @@ const ProjectDetails = () => {
             animate={{ opacity: 1, x: 0 }}
             className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg border border-purple-100 p-6"
           >
-            <h3 className="text-xl font-semibold text-gray-800 mb-4">Project Tasks</h3>
+            <h3 className="text-xl font-semibold text-gray-800 mb-4">
+              Project Tasks
+            </h3>
             <div className="space-y-3">
               {subtasks.map((task) => (
                 <motion.div
-                
                   key={task._id}
                   initial={{ opacity: 0, y: 10 }}
                   animate={{ opacity: 1, y: 0 }}
                   className={`p-4 rounded-lg border transition-all duration-200 cursor-pointer
-                    ${task.status === 'Completed' 
-                      ? 'bg-purple-50 border-purple-200' 
-                      : 'bg-white border-gray-200'
+                    ${
+                      task.status === "Completed"
+                        ? "bg-purple-50 border-purple-200"
+                        : "bg-white border-gray-200"
                     } hover:shadow-md`}
                   onClick={() => toggleSubtask(task._id)}
                 >
                   <div className="flex items-center space-x-3">
-                    <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center
-                      ${task.status === 'Completed' 
-                        ? 'border-purple-500 bg-purple-500' 
-                        : 'border-gray-300'
+                    <div
+                      className={`w-5 h-5 rounded-full border-2 flex items-center justify-center
+                      ${
+                        task.status === "Completed"
+                          ? "border-purple-500 bg-purple-500"
+                          : "border-gray-300"
                       }`}
                     >
-                      {task.status === 'Completed' && <FiCheckCircle className="text-white text-sm" />}
+                      {task.status === "Completed" && (
+                        <FiCheckCircle className="text-white text-sm" />
+                      )}
                     </div>
-                    <span className={`flex-1 ${task.completed ? 'text-purple-600' : 'text-gray-700'}`}>
+                    <span
+                      className={`flex-1 ${
+                        task.completed ? "text-purple-600" : "text-gray-700"
+                      }`}
+                    >
                       {task.title}
                     </span>
-                    <FiChevronRight className={`${task.completed ? 'text-purple-500' : 'text-gray-400'}`} />
+                    <FiChevronRight
+                      className={`${
+                        task.completed ? "text-purple-500" : "text-gray-400"
+                      }`}
+                    />
                   </div>
                 </motion.div>
               ))}
